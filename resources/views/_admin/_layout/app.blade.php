@@ -117,6 +117,14 @@
         $(document).ready(function() {
             console.log('SPA Script Loaded');
 
+            // Replace initial history state so back button works properly
+            if (!history.state) {
+                history.replaceState({
+                    path: window.location.href,
+                    spa: true
+                }, '', window.location.href);
+            }
+
             // Helper to update content from HTML response
             function handleSpaResponse(data, urlToPush) {
                 // Use DOMParser for reliable script extraction (jQuery strips scripts)
@@ -221,7 +229,8 @@
                 // Update URL
                 if (urlToPush && window.location.href !== urlToPush) {
                     window.history.pushState({
-                        path: urlToPush
+                        path: urlToPush,
+                        spa: true
                     }, '', urlToPush);
                 }
 
@@ -274,6 +283,115 @@
                     }
                 });
             }
+
+            // Track if we're in the middle of SPA navigation
+            var spaNavigating = false;
+
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', function(event) {
+                // If no state or not our SPA state, let browser handle it
+                if (!event.state || !event.state.spa) {
+                    console.log('Non-SPA state, letting browser handle');
+                    return;
+                }
+
+                var url = window.location.href;
+                console.log('Browser back/forward to:', url);
+
+                // Prevent any default behavior by immediately updating content
+                spaNavigating = true;
+
+                // Load the page without pushing to history (already in history)
+                NProgress.start();
+                $.ajax({
+                    url: url,
+                    success: function(data) {
+                        // Use DOMParser for reliable parsing
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(data, 'text/html');
+
+                        var mainContentEl = doc.querySelector('#main-content');
+                        var sidebarEl = doc.querySelector('#hs-application-sidebar');
+
+                        if (mainContentEl) {
+                            $('#main-content').html(mainContentEl.innerHTML);
+
+                            // Re-load page scripts (same logic as handleSpaResponse)
+                            var layoutScriptPatterns = ['jquery', 'nprogress', 'vite',
+                                'SPA Script Loaded', 'preline/index'
+                            ];
+                            var allBodyScripts = doc.body.querySelectorAll('script');
+                            var externalScripts = [];
+                            var inlineScripts = [];
+
+                            allBodyScripts.forEach(function(s) {
+                                var src = s.src || '';
+                                var content = s.textContent || '';
+                                var isLayoutScript = layoutScriptPatterns.some(function(
+                                    pattern) {
+                                    return src.toLowerCase().includes(pattern
+                                        .toLowerCase()) || content.includes(
+                                        pattern);
+                                });
+                                if (isLayoutScript) return;
+                                if (s.src) externalScripts.push(s.src);
+                                else if (s.textContent.trim()) inlineScripts.push(s
+                                    .textContent);
+                            });
+
+                            // Load scripts sequentially
+                            (function loadNext(urls, cb) {
+                                if (urls.length === 0) {
+                                    cb();
+                                    return;
+                                }
+                                var u = urls.shift();
+                                if (document.querySelector('script[src="' + u + '"]')) {
+                                    loadNext(urls, cb);
+                                    return;
+                                }
+                                var script = document.createElement('script');
+                                script.src = u;
+                                script.onload = script.onerror = function() {
+                                    loadNext(urls, cb);
+                                };
+                                document.body.appendChild(script);
+                            })(externalScripts.slice(), function() {
+                                inlineScripts.forEach(function(code) {
+                                    try {
+                                        eval(code);
+                                    } catch (e) {}
+                                });
+                                window.dispatchEvent(new Event('load'));
+                            });
+                        }
+
+                        if (sidebarEl) {
+                            $('#hs-application-sidebar').html(sidebarEl.innerHTML);
+                        }
+
+                        if (window.HSStaticMethods) {
+                            window.HSStaticMethods.autoInit();
+                        }
+
+                        NProgress.done();
+                        spaNavigating = false;
+                    },
+                    error: function() {
+                        spaNavigating = false;
+                        window.location.reload();
+                    }
+                });
+            });
+
+            // Handle page restored from bfcache (browser back-forward cache)
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted && spaNavigating) {
+                    // Page was restored from bfcache while we were SPA navigating
+                    console.log('Page restored from bfcache during SPA navigation');
+                    event.preventDefault();
+                }
+            });
 
             // Helper to handle JSON validation errors
             function handleValidationErrors($form, errors) {
