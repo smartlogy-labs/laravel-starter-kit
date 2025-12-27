@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entities;
+namespace App\Constants;
 
-class ResponseEntity
+class ResponseConst
 {
     const HTTP_SUCCESS = 200;
     const HTTP_CREATED = 201;
@@ -15,8 +15,8 @@ class ResponseEntity
     const SUCCESS_MESSAGE_UPDATED = 'Data berhasil diperbarui';
     const SUCCESS_MESSAGE_DELETED = 'Data berhasil dihapus';
     const SUCCESS_MESSAGE_CREATED = 'Data berhasil dibuat';
-    
+
     const ERROR_MESSAGE_NOT_FOUND = 'Data tidak ditemukan';
     const ERROR_MESSAGE_SERVICE = 'Terjadi kesalahan pada server';
-    const DEFAULT_ERROR_MESSAGE = 'Terjadi kesalahan, silakan coba lagi';
+    const DEFAULT_ERROR_MESSAGE = 'Maaf Terjadi kesalahan, silakan coba lagi atau hubungi tim pengembang!';
 }

@@ -2,8 +2,8 @@
 
 namespace App\Usecase;
 
-use App\Entities\DatabaseEntity;
-use App\Entities\ResponseEntity;
+use App\Constants\DatabaseConst;
+use App\Constants\ResponseConst;
 use App\Http\Presenter\Response;
 use Exception;
 use Illuminate\Http\Request;
@@ -15,13 +15,15 @@ use Illuminate\Support\Facades\Hash;
 
 class UserUsecase extends Usecase
 {
+    private const DEFAULT_PASSWORD = 'default';
+
     public function __construct() {}
 
     public function getAll(array $filterData = []): array
     {
         try {
-            $data = DB::table(DatabaseEntity::USER)
-                ->whereNull("deleted_at")
+            $data = DB::table(DatabaseConst::USER)
+                ->whereNull("deleted_atxx")
                 ->when($filterData['keywords'] ?? false, function ($query, $keywords) {
                     return $query->where(function ($q) use ($keywords) {
                         $q->where('name', 'like', '%' . $keywords . '%')
@@ -45,7 +47,7 @@ class UserUsecase extends Usecase
                 [
                     'list' => $data,
                 ],
-                ResponseEntity::HTTP_SUCCESS
+                ResponseConst::HTTP_SUCCESS
             );
         } catch (Exception $e) {
             Log::error(
@@ -62,7 +64,7 @@ class UserUsecase extends Usecase
     public function getByID(int $id): array
     {
         try {
-            $data = DB::table(DatabaseEntity::USER)
+            $data = DB::table(DatabaseConst::USER)
                 ->whereNull("deleted_at")
                 ->where('id', $id)
                 ->first();
@@ -85,8 +87,8 @@ class UserUsecase extends Usecase
     public function create(Request $data): array
     {
         $validator = Validator::make($data->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email',
+            'name'        => 'required',
+            'email'       => 'required|email|unique:users,email',
             'access_type' => 'required|in:admin,user',
         ]);
 
@@ -94,12 +96,12 @@ class UserUsecase extends Usecase
 
         DB::beginTransaction();
         try {
-            DB::table(DatabaseEntity::USER)
+            DB::table(DatabaseConst::USER)
                 ->insert([
                     'name'        => $data['name'],
                     'email'       => $data['email'],
                     'access_type' => $data['access_type'],
-                    'password'    => Hash::make('asdasd'),
+                    'password'    => Hash::make(self::DEFAULT_PASSWORD),
                     'is_active'   => 1,
                     'created_by'  => Auth::user()?->id,
                     'created_at'  => now(),
@@ -125,7 +127,7 @@ class UserUsecase extends Usecase
     public function update(Request $data, int $id): array | Exception
     {
         $validator = Validator::make($data->all(), [
-            'name' => 'required|min:4',
+            'name'  => 'required|min:4',
             'email' => 'required|email',
         ]);
 
@@ -142,14 +144,14 @@ class UserUsecase extends Usecase
         DB::beginTransaction();
 
         try {
-            DB::table("xxx")
+            DB::table(DatabaseConst::USER)
                 ->where("id", $id)
                 ->update($update);
 
             DB::commit();
 
             return Response::buildSuccess(
-                message: ResponseEntity::SUCCESS_MESSAGE_UPDATED
+                message: ResponseConst::SUCCESS_MESSAGE_UPDATED
             );
         } catch (Exception $e) {
             DB::rollback();
@@ -170,7 +172,7 @@ class UserUsecase extends Usecase
         DB::beginTransaction();
 
         try {
-            $delete = DB::table(DatabaseEntity::USER)
+            $delete = DB::table(DatabaseConst::USER)
                 ->where('id', $id)
                 ->update([
                     'deleted_by' => Auth::user()?->id,
@@ -185,7 +187,7 @@ class UserUsecase extends Usecase
             DB::commit();
 
             return Response::buildSuccess(
-                message: ResponseEntity::SUCCESS_MESSAGE_DELETED
+                message: ResponseConst::SUCCESS_MESSAGE_DELETED
             );
         } catch (Exception $e) {
             DB::rollback();
@@ -209,7 +211,7 @@ class UserUsecase extends Usecase
             'current_password' => [
                 'required',
                 function ($attribute, $value, $fail) use ($userID) {
-                    $user = DB::table(DatabaseEntity::USER)
+                    $user = DB::table(DatabaseConst::USER)
                         ->where('id', (int) $userID)
                         ->first(['password']);
 
@@ -233,7 +235,7 @@ class UserUsecase extends Usecase
         DB::beginTransaction();
 
         try {
-            $locked = DB::table(DatabaseEntity::USER)
+            $locked = DB::table(DatabaseConst::USER)
                 ->where('id', $userID)
                 ->whereNull("deleted_at")
                 ->lockForUpdate()
@@ -245,7 +247,7 @@ class UserUsecase extends Usecase
                 throw new Exception("FAILED LOCKED DATA");
             }
 
-            DB::table(DatabaseEntity::USER)
+            DB::table(DatabaseConst::USER)
                 ->where("id", $userID)
                 ->update([
                     'password' => password_hash($data['password'], PASSWORD_DEFAULT),
@@ -254,7 +256,7 @@ class UserUsecase extends Usecase
             DB::commit();
 
             return Response::buildSuccess(
-                message: ResponseEntity::SUCCESS_MESSAGE_UPDATED
+                message: ResponseConst::SUCCESS_MESSAGE_UPDATED
             );
         } catch (Exception $e) {
             DB::rollback();
@@ -272,12 +274,12 @@ class UserUsecase extends Usecase
 
     public function resetPassword(int $id): array
     {
-        $defaultPassword = 'default';
+        $defaultPassword = self::DEFAULT_PASSWORD;
 
         DB::beginTransaction();
 
         try {
-            DB::table(DatabaseEntity::USER)
+            DB::table(DatabaseConst::USER)
                 ->where('id', $id)
                 ->update([
                     'password' => Hash::make($defaultPassword),

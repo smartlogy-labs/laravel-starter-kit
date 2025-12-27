@@ -6,9 +6,10 @@
   w-65 h-full
   hidden
   fixed inset-y-0 start-0 z-60
-  bg-white rounded-r-2xl
+   rounded-r-2xl
   lg:block lg:translate-x-0 lg:end-auto lg:bottom-0
-  dark:bg-neutral-800 dark:border-neutral-700"
+  dark:bg-neutral-800 dark:border-neutral-700
+  bg-gray-50"
     role="dialog" tabindex="-1" aria-label="Sidebar">
     <div class="relative flex flex-col h-full max-h-full">
         <div class="px-6 pt-4 flex items-center">
@@ -41,7 +42,7 @@
                 <ul class="flex flex-col space-y-1">
                     <li>
                         <a navigate
-                            class="flex items-center gap-x-3.5 py-2 px-2.5 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-100 text-blue-600 dark:bg-neutral-700 dark:text-blue-400' : 'text-gray-800 dark:text-white' }} text-sm rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
+                            class="flex items-center gap-x-3.5 py-2.5 px-3 {{ request()->routeIs('admin.dashboard') ? 'bg-blue-100 text-blue-600 dark:bg-neutral-700 dark:text-blue-400' : 'text-gray-800 dark:text-white' }} text-sm rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
                             href="{{ route('admin.dashboard') }}">
                             <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
                                 height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -56,7 +57,7 @@
                     <li class="hs-accordion {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
                         id="projects-accordion">
                         <button type="button"
-                            class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:text-neutral-200"
+                            class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5  py-2.5 px-3 text-sm text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:text-neutral-200"
                             aria-expanded="true" aria-controls="projects-accordion-child">
                             <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
                                 height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -87,7 +88,7 @@
                             <ul class="ps-8 pt-1 space-y-1">
                                 <li>
                                     <a navigate
-                                        class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-100 text-blue-600 dark:bg-neutral-700 dark:text-blue-400' : 'text-gray-800 dark:text-neutral-200' }}"
+                                        class="flex items-center gap-x-3.5  py-2.5 px-3 text-sm rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-100 text-blue-600 dark:bg-neutral-700 dark:text-blue-400' : 'text-gray-800 dark:text-neutral-200' }}"
                                         href="{{ route('admin.users.index') }}">
                                         Pengguna Aplikasi
                                     </a>
@@ -96,7 +97,7 @@
                         </div>
                     </li>
 
-                    {{-- <li><a class="w-full flex items-center gap-x-3.5 py-2 px-2.5 {{ request()->routeIs('admin.users.*') ? 'bg-gray-100 dark:bg-neutral-700' : '' }} text-sm text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:text-neutral-200"
+                    {{-- <li><a class="w-full flex items-center gap-x-3.5  py-2.5 px-3 {{ request()->routeIs('admin.users.*') ? 'bg-gray-100 dark:bg-neutral-700' : '' }} text-sm text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:text-neutral-200"
                             href="{{ route('admin.users.index') }}">
                             <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
                                 height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -108,7 +109,7 @@
                             </svg>
                             Users
                         </a></li> --}}
-                    {{-- <li><a class="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:text-neutral-200" href="#">
+                    {{-- <li><a class="w-full flex items-center gap-x-3.5  py-2.5 px-3 text-sm text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700 dark:text-neutral-200" href="#">
             <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             Documentation
           </a></li> --}}
@@ -117,17 +118,19 @@
         </div>
 
         <div
-            class="p-4 border-t border-gray-200 dark:border-neutral-700 sticky bottom-0 z-10 bg-white dark:bg-neutral-800">
+            class="p-4 border-t border-gray-200 dark:border-neutral-700 sticky bottom-0 z-10 bg-gray-50 dark:bg-neutral-800">
             <div class="hs-dropdown relative inline-flex w-full [--placement:top-left]">
                 <button id="sidebar-bottom-dropdown" type="button"
-                    class="hs-dropdown-toggle w-full group flex items-center gap-x-3.5 py-2 px-2.5 text-start text-sm text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
+                    class="hs-dropdown-toggle w-full group flex items-center gap-x-3.5  py-2.5 px-3 text-start text-sm text-gray-800 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
                     aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
                     <img class="shrink-0 size-9 rounded-full"
-                        src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=320&h=320&q=80"
+                        src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=random&length=2"
                         alt="Avatar">
                     <div class="grow">
-                        <p class="text-sm font-semibold text-gray-800 dark:text-neutral-200">James (Admin)</p>
-                        <p class="text-xs text-gray-500 dark:text-neutral-500">Super Admin</p>
+                        <p class="text-sm font-semibold text-gray-800 dark:text-neutral-200">{{ Auth::user()->name }}
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-neutral-500">{{ ucfirst(Auth::user()->access_type) }}
+                        </p>
                     </div>
                     <svg class="hs-dropdown-open:rotate-180 size-4 text-gray-600 dark:text-neutral-400 transition-transform duration-300"
                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -185,9 +188,23 @@
                                     d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
                                 <circle cx="12" cy="12" r="3" />
                             </svg>
-
                             Pengaturan Aplikasi
                         </a>
+                        <form action="{{ route('logout') }}" method="POST"
+                            onsubmit="return confirm('Apakah anda yakin ingin keluar?');">
+                            @csrf
+                            <button type="submit"
+                                class="w-full flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-red-600 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:text-red-500 dark:hover:bg-neutral-700 dark:hover:text-red-500 dark:focus:bg-neutral-700 dark:focus:text-red-500">
+                                <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
+                                    height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                    <polyline points="16 17 21 12 16 7" />
+                                    <line x1="21" x2="9" y1="12" y2="12" />
+                                </svg>
+                                Log out
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

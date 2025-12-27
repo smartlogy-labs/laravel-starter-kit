@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Entities\ResponseEntity;
+use App\Constants\ResponseConst;
 use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
 use App\Usecase\UserUsecase;
@@ -33,7 +33,7 @@ class UserController extends Controller
             'keywords' => $request->get('keywords'),
             'access_type' => $request->get('access_type'),
         ]);
-        $data = $data['data']['list'];
+        $data = $data['data']['list'] ?? [];
 
         return view("_admin.users.index", [
             'data' => $data,
@@ -59,12 +59,12 @@ class UserController extends Controller
         if ($process['success']) {
             return redirect()
                 ->route('admin.users.index')
-                ->with('success', ResponseEntity::SUCCESS_MESSAGE_CREATED);
+                ->with('success', ResponseConst::SUCCESS_MESSAGE_CREATED);
         } else {
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', $process['message'] ?? ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', $process['message'] ?? ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
     }
 
@@ -75,7 +75,7 @@ class UserController extends Controller
         if (empty($data['data'])) {
             return redirect()
                 ->intended($this->baseRedirect)
-                ->with('error', ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
         $data = $data['data'] ?? [];
 
@@ -92,7 +92,7 @@ class UserController extends Controller
         if (empty($data['data'])) {
             return redirect()
                 ->intended($this->baseRedirect)
-                ->with('error', ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
         $data = $data['data'] ?? [];
 
@@ -113,12 +113,12 @@ class UserController extends Controller
         if ($process['success']) {
             return redirect()
                 ->route('admin.users.index')
-                ->with('success', ResponseEntity::SUCCESS_MESSAGE_UPDATED);
+                ->with('success', ResponseConst::SUCCESS_MESSAGE_UPDATED);
         } else {
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('success', ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('success', ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
     }
 
@@ -129,11 +129,11 @@ class UserController extends Controller
         if ($process['success']) {
             return redirect()
                 ->route('admin.users.index')
-                ->with('success', ResponseEntity::SUCCESS_MESSAGE_DELETED);
+                ->with('success', ResponseConst::SUCCESS_MESSAGE_DELETED);
         } else {
             return redirect()
                 ->route('admin.users.index')
-                ->with('error', $process['message'] ?? ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', $process['message'] ?? ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
     }
 
@@ -148,7 +148,7 @@ class UserController extends Controller
         } else {
             return redirect()
                 ->route('admin.users.index')
-                ->with('error', $resetProcess['message'] ?? ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', $resetProcess['message'] ?? ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
     }
 }

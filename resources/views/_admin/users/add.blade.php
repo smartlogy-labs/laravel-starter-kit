@@ -1,18 +1,19 @@
 @extends('_admin._layout.app')
 
-@section('title', 'Add User')
+@section('title', 'Tambah Pengguna Baru')
 
 @section('content')
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-white overflow-hidden shadow-lg rounded-2xl dark:bg-neutral-800">
+        <div
+            class="bg-white overflow-hidden shadow-lg rounded-2xl dark:bg-neutral-800 border-2 border-gray-100 dark:border-neutral-700">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-neutral-700 flex justify-between items-center">
                 <div>
                     <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
-                        Tambah Data Pengguna
+                        Tambah Pengguna Baru
                     </h2>
                 </div>
                 <div>
-                    <a navigate href="{{ url('admin/users') }}"
+                    <a navigate href="{{ route('admin.users.index') }}"
                         class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-medium rounded-lg border border-transparent bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-hidden focus:bg-yellow-600 disabled:opacity-50 disabled:pointer-events-none">
                         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -20,65 +21,69 @@
                             <path d="m12 19-7-7 7-7" />
                             <path d="M19 12H5" />
                         </svg>
-
                         Kembali
                     </a>
                 </div>
             </div>
 
-            <form navigate-form action="{{ route('admin.users.create') }}" method="POST" class="p-6">
+            <form id="add-form" class="p-6" navigate-form action="{{ route('admin.users.create') }}" method="POST">
                 @csrf
 
-                <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium mb-2 dark:text-white">Name <span
-                            class="text-red-500">*</span></label>
-                    <input type="text" id="name" name="name" value="{{ old('name') }}"
-                        class="sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 @error('name') border-red-500 @enderror"
-                        placeholder="Enter full name" required>
-                    @error('name')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
+                <div class="space-y-4">
+                    {{-- Name --}}
+                    <div>
+                        <label for="name" class="block text-sm font-medium mb-2 dark:text-white">Nama Lengkap <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" id="name" name="name" value="{{ old('name') }}"
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 placeholder-neutral-300 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 @error('name') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror"
+                            placeholder="Contoh: John Doe" required>
+                        @error('name')
+                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Email --}}
+                    <div>
+                        <label for="email" class="block text-sm font-medium mb-2 dark:text-white">Email Address <span
+                                class="text-red-500">*</span></label>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}"
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 placeholder-neutral-300 dark:border-neutral-700 dark:text-neutral-400 placeholder-neutral-300 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 @error('email') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror"
+                            placeholder="Contoh: john@example.com" required>
+                        @error('email')
+                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Access Type --}}
+                    <div>
+                        <label for="access_type" class="block text-sm font-medium mb-2 dark:text-white">Hak Akses <span
+                                class="text-red-500">*</span></label>
+                        <select id="access_type" name="access_type"
+                            class="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 @error('access_type') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror"
+                            required>
+                            <option value="">-- Pilih Hak Akses --</option>
+                            <option value="admin" {{ old('access_type') == 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="user" {{ old('access_type') == 'user' ? 'selected' : '' }}>User</option>
+                        </select>
+                        @error('access_type')
+                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium mb-2 dark:text-white">Email <span
-                            class="text-red-500">*</span></label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}"
-                        class="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 @error('email') border-red-500 @enderror"
-                        placeholder="you@site.com" required>
-                    @error('email')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="access_type" class="block text-sm font-medium mb-2 dark:text-white">Access Type <span
-                            class="text-red-500">*</span></label>
-                    <select id="access_type" name="access_type"
-                        class="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600 @error('access_type') border-red-500 @enderror"
-                        required>
-                        <option value="">-- Select Access Type --</option>
-                        <option value="admin" {{ old('access_type') == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="user" {{ old('access_type') == 'user' ? 'selected' : '' }}>User</option>
-                    </select>
-                    @error('access_type')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="flex justify-start gap-x-2 mt-4">
-                    <a navigate href="{{ url('admin/users') }}"
-                        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800">
+                {{-- Footer --}}
+                <div class="mt-4 flex justify-start gap-x-2">
+                    <a navigate href="{{ route('admin.users.index') }}"
+                        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800">
                         Batal
                     </a>
                     <button type="submit"
-                        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                        class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none cursor-pointer">
                         <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                            <polyline points="17 21 17 13 7 13 7 21" />
-                            <polyline points="7 3 7 8 15 8" />
+                            <path d="M5 12h14" />
+                            <path d="M12 5v14" />
                         </svg>
                         Simpan Data
                     </button>

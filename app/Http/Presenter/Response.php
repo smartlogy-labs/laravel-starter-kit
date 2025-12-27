@@ -2,14 +2,14 @@
 
 namespace App\Http\Presenter;
 
-use App\Entities\ResponseEntity;
+use App\Constants\ResponseConst;
 
 class Response
 {
     /**
      * Build a success response
      */
-    public static function buildSuccess(mixed $data = [], int $code = ResponseEntity::HTTP_SUCCESS, string $message = 'Success'): array
+    public static function buildSuccess(mixed $data = [], int $code = ResponseConst::HTTP_SUCCESS, string $message = 'Success'): array
     {
         return [
             'success' => true,
@@ -22,11 +22,11 @@ class Response
     /**
      * Build a success response for created resources
      */
-    public static function buildSuccessCreated(mixed $data = [], string $message = ResponseEntity::SUCCESS_MESSAGE_CREATED): array
+    public static function buildSuccessCreated(mixed $data = [], string $message = ResponseConst::SUCCESS_MESSAGE_CREATED): array
     {
         return [
             'success' => true,
-            'code'    => ResponseEntity::HTTP_CREATED,
+            'code'    => ResponseConst::HTTP_CREATED,
             'message' => $message,
             'data'    => $data,
         ];
@@ -35,11 +35,11 @@ class Response
     /**
      * Build an error response for service/server errors
      */
-    public static function buildErrorService(string $message = ResponseEntity::ERROR_MESSAGE_SERVICE): array
+    public static function buildErrorService(string $message = ResponseConst::ERROR_MESSAGE_SERVICE): array
     {
         return [
             'success' => false,
-            'code'    => ResponseEntity::HTTP_INTERNAL_ERROR,
+            'code'    => ResponseConst::HTTP_INTERNAL_ERROR,
             'message' => $message,
             'data'    => null,
         ];
@@ -48,11 +48,11 @@ class Response
     /**
      * Build an error response for not found
      */
-    public static function buildErrorNotFound(string $message = ResponseEntity::ERROR_MESSAGE_NOT_FOUND): array
+    public static function buildErrorNotFound(string $message = ResponseConst::ERROR_MESSAGE_NOT_FOUND): array
     {
         return [
             'success' => false,
-            'code'    => ResponseEntity::HTTP_NOT_FOUND,
+            'code'    => ResponseConst::HTTP_NOT_FOUND,
             'message' => $message,
             'data'    => null,
         ];
