@@ -1,59 +1,110 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Starter Kit
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern Laravel starter kit with admin panel, built with Laravel 12, Tailwind CSS 4, and Preline UI components.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- 🚀 **Laravel 12** - Latest Laravel framework
+- 🎨 **Tailwind CSS 4** - Utility-first CSS framework
+- 🧩 **Preline UI** - Beautiful UI components
+- 🌙 **Dark Mode** - Built-in dark mode support
+- 👤 **User Management** - Complete CRUD for users
+- 📱 **Responsive** - Mobile-first design
+- ⚡ **Vite** - Lightning fast build tool
+- 🧪 **Pest** - Modern PHP testing framework
+- 🏗️ **Clean Architecture** - Usecase pattern for business logic
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2+
+- Composer
+- Bun
+- SQLite / MySQL / PostgreSQL
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+1. Clone the repository
+```bash
+git clone https://github.com/rahmatrdn/laravel-starter-kit.git
+cd laravel-starter-kit
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. Run the setup command
+```bash
+composer setup
+```
 
-## Laravel Sponsors
+This will:
+- Install PHP dependencies
+- Create `.env` file from `.env.example`
+- Generate application key
+- Run database migrations
+- Install NPM dependencies
+- Build frontend assets
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. Start the development server
+```bash
+composer dev
+```
 
-### Premium Partners
+This will start:
+- Laravel development server
+- Queue listener
+- Laravel Pail (log viewer)
+- Vite dev server
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Project Structure
+
+```
+app/
+├── Entities/        # Data Transfer Objects
+├── Http/
+│   └── Controllers/ # HTTP Controllers
+├── Models/          # Eloquent Models
+├── Usecase/         # Business Logic Layer
+└── Providers/       # Service Providers
+
+resources/
+└── views/
+    └── _admin/      # Admin panel views
+        ├── _layout/ # Layout components
+        ├── users/   # User management views
+        └── ...
+```
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `composer setup` | Initial project setup |
+| `composer dev` | Start development servers |
+| `composer test` | Run tests |
+| `bun run dev` | Start Vite dev server |
+| `bun run build` | Build for production |
+
+## Admin Panel
+
+The admin panel is available at `/admin` route and includes:
+
+- Dashboard with statistics
+- User management (CRUD)
+- Responsive sidebar navigation
+- Dark mode toggle
+
+## Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Backend | Laravel 12, PHP 8.2+ |
+| Frontend | Tailwind CSS 4, Preline UI |
+| Build Tool | Vite 7 |
+| Testing | Pest |
+| Database | SQLite (default), MySQL, PostgreSQL |
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

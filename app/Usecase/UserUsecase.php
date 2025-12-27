@@ -2,47 +2,60 @@
 
 namespace App\Usecase;
 
-use App\Entities\DatabaseEntity;
-use App\Entities\ResponseEntity;
+use App\Constants\DatabaseConst;
+use App\Constants\ResponseConst;
 use App\Http\Presenter\Response;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 
 class UserUsecase extends Usecase
 {
-    public string $className;
+    private const DEFAULT_PASSWORD = 'default';
 
-    public function __construct()
-    {
-        $this->className = "UserUsecase";
-    }
+    public function __construct() {}
 
     public function getAll(array $filterData = []): array
     {
-        $funcName = $this->className . ".getAll";
-
         try {
-            $data = DB::table(DatabaseEntity::USER)
-                ->whereNull("deleted_at")
-                ->orderBy("created_at", "desc")
+            $data = DB::table(DatabaseConst::USER)
+                ->whereNull('deleted_at')
+                ->when($filterData['keywords'] ?? false, function ($query, $keywords) {
+                    return $query->where(function ($q) use ($keywords) {
+                        $q->where('name', 'like', '%'.$keywords.'%')
+                            ->orWhere('email', 'like', '%'.$keywords.'%');
+                    });
+                })
+                ->when($filterData['access_type'] ?? false, function ($query, $accessType) {
+                    if ($accessType !== 'all') {
+                        return $query->where('access_type', $accessType);
+                    }
+                })
+                ->orderBy('created_at', 'desc')
                 ->paginate(20);
+
+            // Append filter parameters to pagination links
+            if (! empty($filterData)) {
+                $data->appends($filterData);
+            }
 
             return Response::buildSuccess(
                 [
                     'list' => $data,
                 ],
-                ResponseEntity::HTTP_SUCCESS
+                ResponseConst::HTTP_SUCCESS
             );
         } catch (Exception $e) {
-            Log::error($e->getMessage(), [
-                "func_name" => $funcName,
-                'user' => Auth::user()
-            ]);
+            Log::error(
+                message: $e->getMessage(),
+                context: [
+                    'method' => __METHOD__,
+                ]
+            );
 
             return Response::buildErrorService($e->getMessage());
         }
@@ -50,11 +63,9 @@ class UserUsecase extends Usecase
 
     public function getByID(int $id): array
     {
-        $funcName = $this->className . ".getByID";
-
         try {
-            $data = DB::table(DatabaseEntity::USER)
-                ->whereNull("deleted_at")
+            $data = DB::table(DatabaseConst::USER)
+                ->whereNull('deleted_at')
                 ->where('id', $id)
                 ->first();
 
@@ -62,10 +73,12 @@ class UserUsecase extends Usecase
                 data: collect($data)->toArray()
             );
         } catch (Exception $e) {
-            Log::error($e->getMessage(), [
-                "func_name" => $funcName,
-                'user' => Auth::user()
-            ]);
+            Log::error(
+                message: $e->getMessage(),
+                context: [
+                    'method' => __METHOD__,
+                ]
+            );
 
             return Response::buildErrorService($e->getMessage());
         }
@@ -73,27 +86,25 @@ class UserUsecase extends Usecase
 
     public function create(Request $data): array
     {
-        $funcName = $this->className . ".create";
-
         $validator = Validator::make($data->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'access_type' => 'required|in:admin,user',
+            'access_type' => 'required',
         ]);
 
         $validator->validate();
 
         DB::beginTransaction();
         try {
-            DB::table(DatabaseEntity::USER)
+            DB::table(DatabaseConst::USER)
                 ->insert([
-                    'name'        => $data['name'],
-                    'email'       => $data['email'],
+                    'name' => $data['name'],
+                    'email' => $data['email'],
                     'access_type' => $data['access_type'],
-                    'password'    => Hash::make('asdasd'),
-                    'is_active'   => 1,
-                    'created_by'  => Auth::user()?->id,
-                    'created_at'  => now(),
+                    'password' => Hash::make(self::DEFAULT_PASSWORD),
+                    'is_active' => 1,
+                    'created_by' => Auth::user()?->id,
+                    'created_at' => now(),
                 ]);
 
             DB::commit();
@@ -102,87 +113,91 @@ class UserUsecase extends Usecase
         } catch (Exception $e) {
             DB::rollback();
 
-            Log::error($e->getMessage(), [
-                "func_name" => $funcName,
-                'user' => Auth::user()
-            ]);
+            Log::error(
+                message: $e->getMessage(),
+                context: [
+                    'method' => __METHOD__,
+                ]
+            );
+
             return Response::buildErrorService($e->getMessage());
         }
     }
 
-    public function update(Request $data, int $id): array
+    public function update(Request $data, int $id): array|Exception
     {
-        $funcName = $this->className . ".update";
-
         $validator = Validator::make($data->all(), [
-            'name' => 'required',
+            'name' => 'required|min:4',
             'email' => 'required|email',
         ]);
 
         $validator->validate();
 
         $update = [
-            'name'        => $data['name'],
-            'email'       => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'access_type' => $data['access_type'],
-            'updated_by'  => Auth::user()?->id,
-            'updated_at'  => now(),
+            'updated_by' => Auth::user()?->id,
+            'updated_at' => now(),
         ];
 
         DB::beginTransaction();
 
         try {
-            DB::table(DatabaseEntity::USER)
-                ->where("id", $id)
+            DB::table(DatabaseConst::USER)
+                ->where('id', $id)
                 ->update($update);
 
             DB::commit();
 
             return Response::buildSuccess(
-                message: ResponseEntity::SUCCESS_MESSAGE_UPDATED
+                message: ResponseConst::SUCCESS_MESSAGE_UPDATED
             );
         } catch (Exception $e) {
             DB::rollback();
 
-            Log::error($e->getMessage(), [
-                "func_name" => $funcName,
-                'user' => Auth::user()
-            ]);
+            Log::error(
+                message: $e->getMessage(),
+                context: [
+                    'method' => __METHOD__,
+                ]
+            );
+
             return Response::buildErrorService($e->getMessage());
         }
     }
 
     public function delete(int $id): array
     {
-        $funcName = $this->className . ".delete";
-
         DB::beginTransaction();
 
         try {
-            $delete = DB::table(DatabaseEntity::USER)
+            $delete = DB::table(DatabaseConst::USER)
                 ->where('id', $id)
                 ->update([
                     'deleted_by' => Auth::user()?->id,
                     'deleted_at' => now(),
                 ]);
 
-            if (!$delete) {
+            if (! $delete) {
                 DB::rollback();
-                throw new Exception("FAILED DELETE DATA");
+                throw new Exception('FAILED DELETE DATA');
             }
 
             DB::commit();
 
             return Response::buildSuccess(
-                message: ResponseEntity::SUCCESS_MESSAGE_DELETED
+                message: ResponseConst::SUCCESS_MESSAGE_DELETED
             );
         } catch (Exception $e) {
             DB::rollback();
 
-            Log::error($e->getMessage(), [
-                "func_name" => $funcName,
-                'user' => Auth::user()
-            ]);
+            Log::error(
+                message: $e->getMessage(),
+                context: [
+                    'method' => __METHOD__,
+                ]
+            );
 
             return Response::buildErrorService($e->getMessage());
         }
@@ -191,65 +206,56 @@ class UserUsecase extends Usecase
     public function changePassword(array $data): array
     {
         $userID = Auth::user()?->id;
-        $funcName = $this->className . ".changePassword";
 
         $validator = Validator::make($data, [
-            'current_password' => [
-                'required',
-                function ($attribute, $value, $fail) use ($userID) {
-                    $user = DB::table(DatabaseEntity::USER)
-                        ->where('id', (int) $userID)
-                        ->first(['password']);
-                        
-                    if (!Hash::check($value, $user->password)) {
-                        $fail('Password saat ini salah.');
-                    }
-                },
-            ],
-            'password'         => 'required|min:6',
-            're_password'      => 'required|same:password',
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', 'min:6', 'different:current_password'],
         ]);
-        
+
         $customAttributes = [
             'current_password' => 'Password Lama',
-            'password'         => 'Password Baru',
-            're_password'      => 'Ulangi Password Baru',
+            'password' => 'Password Baru',
         ];
         $validator->setAttributeNames($customAttributes);
         $validator->validate();
-        
+
         DB::beginTransaction();
 
         try {
-            $locked = DB::table(DatabaseEntity::USER)
+            $locked = DB::table(DatabaseConst::USER)
                 ->where('id', $userID)
-                ->whereNull("deleted_at")
+                ->whereNull('deleted_at')
                 ->lockForUpdate()
                 ->first(['id']);
 
-            if (!$locked) {
+            if (! $locked) {
                 DB::rollback();
 
-                throw new Exception("FAILED LOCKED DATA");
+                throw new Exception('FAILED LOCKED DATA');
             }
 
-            DB::table(DatabaseEntity::USER)
-                ->where("id", $userID)
+            DB::table(DatabaseConst::USER)
+                ->where('id', $userID)
                 ->update([
-                    'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+                    'password' => Hash::make($data['password']),
+                    'updated_by' => $userID,
+                    'updated_at' => now(),
                 ]);
 
             DB::commit();
 
             return Response::buildSuccess(
-                message: ResponseEntity::SUCCESS_MESSAGE_UPDATED
+                message: ResponseConst::SUCCESS_MESSAGE_UPDATED
             );
         } catch (Exception $e) {
             DB::rollback();
 
-            Log::error($e->getMessage(), [
-                "func_name" => $funcName,
-            ]);
+            Log::error(
+                message: $e->getMessage(),
+                context: [
+                    'method' => __METHOD__,
+                ]
+            );
 
             return Response::buildErrorService($e->getMessage());
         }
@@ -257,14 +263,12 @@ class UserUsecase extends Usecase
 
     public function resetPassword(int $id): array
     {
-        $funcName = $this->className . ".resetPassword";
-
-        $defaultPassword = 'asdasd';
+        $defaultPassword = self::DEFAULT_PASSWORD;
 
         DB::beginTransaction();
 
         try {
-            DB::table(DatabaseEntity::USER)
+            DB::table(DatabaseConst::USER)
                 ->where('id', $id)
                 ->update([
                     'password' => Hash::make($defaultPassword),
@@ -280,13 +284,14 @@ class UserUsecase extends Usecase
         } catch (Exception $e) {
             DB::rollback();
 
-            Log::error($e->getMessage(), [
-                "func_name" => $funcName,
-                'user' => Auth::user()
-            ]);
+            Log::error(
+                message: $e->getMessage(),
+                context: [
+                    'method' => __METHOD__,
+                ]
+            );
 
             return Response::buildErrorService($e->getMessage());
         }
     }
-
 }

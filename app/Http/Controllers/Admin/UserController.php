@@ -2,50 +2,48 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
-use App\Entities\ResponseEntity;
-use Illuminate\Contracts\View\View;
+use App\Constants\ResponseConst;
 use App\Http\Controllers\Controller;
 use App\Usecase\UserUsecase;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    protected $usecase;
-    protected $page = [
-        "route" => "user",
-        "title" => "Pengguna Aplikasi",
+    protected array $page = [
+        'route' => 'user',
+        'title' => 'Pengguna Aplikasi',
     ];
-    protected $baseRedirect;
 
-    public function __construct(UserUsecase $usecase)
-    {
-        $this->usecase = $usecase;
-        $this->baseRedirect = "admin/" . $this->page['route'];
+    protected string $baseRedirect;
+
+    public function __construct(
+        protected UserUsecase $usecase
+    ) {
+        $this->baseRedirect = 'admin/' . $this->page['route'];
     }
 
-    public function index(): View | Response
+    public function index(Request $request): View|Response
     {
-        $response = $this->usecase->getAll();
-        
-        if (!$response['success'] || empty($response['data']['list'])) {
-            $users = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 20);
-        } else {
-            $users = $response['data']['list'];
-        }
+        $data = $this->usecase->getAll([
+            'keywords' => $request->get('keywords'),
+            'access_type' => $request->get('access_type'),
+        ]);
+        $data = $data['data']['list'] ?? [];
 
-        return view("_admin.users.index", [
-            'users' => $users,
+        return view('_admin.users.index', [
+            'data' => $data,
             'page' => $this->page,
+            'keywords' => $request->get('keywords'),
+            'access_type' => $request->get('access_type'),
         ]);
     }
 
-    public function add(): View | Response
+    public function add(): View|Response
     {
-        return view("_admin.users.add", [
+        return view('_admin.users.add', [
             'page' => $this->page,
         ]);
     }
@@ -59,34 +57,51 @@ class UserController extends Controller
         if ($process['success']) {
             return redirect()
                 ->route('admin.users.index')
-                ->with('success', ResponseEntity::SUCCESS_MESSAGE_CREATED);
+                ->with('success', ResponseConst::SUCCESS_MESSAGE_CREATED);
         } else {
             return redirect()
                 ->back()
                 ->withInput()
-                ->with('error', $process['message'] ?? ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', $process['message'] ?? ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
     }
 
-    public function update(int $id): View|RedirectResponse | Response
+    public function detail(int $id): View|RedirectResponse|Response
     {
         $data = $this->usecase->getByID($id);
 
         if (empty($data['data'])) {
             return redirect()
                 ->intended($this->baseRedirect)
-                ->with('error', ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
         $data = $data['data'] ?? [];
 
-        return view("_admin.users.update", [
+        return view('_admin.users.detail', [
+            'data' => (object) $data,
+            'page' => $this->page,
+        ]);
+    }
+
+    public function update(int $id): View|RedirectResponse|Response
+    {
+        $data = $this->usecase->getByID($id);
+
+        if (empty($data['data'])) {
+            return redirect()
+                ->intended($this->baseRedirect)
+                ->with('error', ResponseConst::DEFAULT_ERROR_MESSAGE);
+        }
+        $data = $data['data'] ?? [];
+
+        return view('_admin.users.update', [
             'data' => (object) $data,
             'userId' => $id,
             'page' => $this->page,
         ]);
     }
 
-    public function doUpdate(int $id, Request $request): JsonResponse
+    public function doUpdate(int $id, Request $request): RedirectResponse
     {
         $process = $this->usecase->update(
             data: $request,
@@ -94,17 +109,14 @@ class UserController extends Controller
         );
 
         if ($process['success']) {
-            return response()->json([
-                "success" => true,
-                "message" => ResponseEntity::SUCCESS_MESSAGE_UPDATED,
-                "redirect" => $this->page['route']
-            ]);
+            return redirect()
+                ->route('admin.users.index')
+                ->with('success', ResponseConst::SUCCESS_MESSAGE_UPDATED);
         } else {
-            return response()->json([
-                "success" => false,
-                "message" => $process['message'] ?? ResponseEntity::DEFAULT_ERROR_MESSAGE,
-                "redirect" => $this->page['route']
-            ]);
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('success', ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
     }
 
@@ -115,11 +127,11 @@ class UserController extends Controller
         if ($process['success']) {
             return redirect()
                 ->route('admin.users.index')
-                ->with('success', ResponseEntity::SUCCESS_MESSAGE_DELETED);
+                ->with('success', ResponseConst::SUCCESS_MESSAGE_DELETED);
         } else {
             return redirect()
                 ->route('admin.users.index')
-                ->with('error', $process['message'] ?? ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', $process['message'] ?? ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
     }
 
@@ -134,7 +146,28 @@ class UserController extends Controller
         } else {
             return redirect()
                 ->route('admin.users.index')
-                ->with('error', $resetProcess['message'] ?? ResponseEntity::DEFAULT_ERROR_MESSAGE);
+                ->with('error', $resetProcess['message'] ?? ResponseConst::DEFAULT_ERROR_MESSAGE);
+        }
+    }
+
+    public function changePassword(): View
+    {
+        return view('_admin.profile.change_password');
+    }
+
+    public function doChangePassword(Request $request): RedirectResponse
+    {
+        $process = $this->usecase->changePassword($request->all());
+
+        if ($process['success']) {
+            return redirect()
+                ->back()
+                ->with('success', 'Password berhasil diubah.');
+        } else {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', $process['message'] ?? ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
     }
 }

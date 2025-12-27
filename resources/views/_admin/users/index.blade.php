@@ -1,55 +1,97 @@
 @extends('_admin._layout.app')
 
-@section('title', 'Users')
+@section('title', 'Pengguna Aplikasi')
+
+@php
+    use App\Constants\UserConst;
+@endphp
 
 @section('content')
-    <div class="flex flex-col">
-        <div class="overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
-            <div class="min-w-full inline-block align-middle">
-                <div class="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden dark:bg-neutral-800 dark:border-neutral-700">
-                    <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 dark:border-neutral-700">
-                        <div>
-                            <h2 class="text-xl font-semibold text-gray-800 dark:text-neutral-200">
-                                Users
-                            </h2>
-                            <p class="text-sm text-gray-600 dark:text-neutral-400">
-                                Add users, edit and more.
-                            </p>
-                        </div>
+    <div class="grid gap-3 md:flex md:justify-between md:items-center py-4">
+        <div>
+            <h1 class="text-2xl font-extrabold text-gray-800 dark:text-neutral-200 mb-1">
+                Data {{ $page['title'] }}
+            </h1>
+            <p class="text-md text-gray-400 dark:text-neutral-400">
+                Pengguna Aplikasi
+            </p>
+        </div>
 
-                        <div>
-                            <div class="inline-flex gap-x-2">
-                                <a class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none" href="{{ route('admin.users.add') }}">
-                                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                                    Add user
-                                </a>
+        <div>
+            <div class="inline-flex gap-x-2">
+                <a navigate
+                    class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none font-bolder"
+                    href="{{ route('admin.users.add') }}">
+                    @include('_admin._layout.icons.add')
+                    Tambah Data
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col">
+        <div class="overflow-x-auto">
+            <div class="min-w-full inline-block align-middle">
+                <div class="overflow-hidden">
+
+                    <div class="px-2 pt-4">
+                        <form action="{{ route('admin.users.index') }}" method="GET" navigate-form
+                            class="flex flex-col sm:flex-row gap-3">
+                            <div class="sm:w-64">
+                                <label for="keywords" class="sr-only">Search</label>
+                                <div class="relative">
+                                    <input type="text" name="keywords" id="keywords" value="{{ $keywords ?? '' }}"
+                                        class="py-1 px-3 block w-full border-gray-200 rounded-lg text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 
+                                        placeholder-neutral-300 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                                        placeholder="Nama atau Email">
+                                </div>
                             </div>
-                        </div>
+                            <div class="sm:w-48">
+                                <select name="access_type"
+                                    class="py-1 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600">
+                                    <option value="all" {{ ($access_type ?? 'all') == 'all' ? 'selected' : '' }}>
+                                        Semua Hak Akses
+                                    </option>
+                                    <option value="admin" {{ ($access_type ?? '') == 'admin' ? 'selected' : '' }}>Admin
+                                    </option>
+                                    <option value="user" {{ ($access_type ?? '') == 'user' ? 'selected' : '' }}>User
+                                    </option>
+                                </select>
+                            </div>
+                            <div>
+                                <button type="submit"
+                                    class="py-1 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer">
+                                    @include('_admin._layout.icons.search')
+                                    Cari
+                                </button>
+                                @if (!empty($keywords) || ($access_type ?? 'all') !== 'all')
+                                    <a class="py-1 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-blue-600 text-blue-600 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50 disabled:opacity-50 disabled:pointer-events-none dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-500/10 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600 cursor-pointer"
+                                        href="{{ route('admin.users.index') }}">
+                                        @include('_admin._layout.icons.reset')
+                                        Reset
+                                    </a>
+                                @endif
+                            </div>
+                        </form>
                     </div>
 
-                    <div class="mx-4 my-4 overflow-x-auto border border-gray-200 rounded-lg dark:border-neutral-700">
+                    <div class="mx-0 my-4 overflow-x-auto border border-gray-200 rounded-lg dark:border-neutral-700">
                         <table class="w-full divide-y divide-gray-200 dark:divide-neutral-700">
-                            <thead class="bg-gray-50 dark:bg-neutral-800">
+                            <thead class=" dark:bg-neutral-800">
                                 <tr>
-                                    <th scope="col" class="ps-6 py-3 text-start">
-                                        <label for="hs-at-with-checkboxes-main" class="flex">
-                                            <input type="checkbox" class="shrink-0 border-gray-300 rounded-sm text-blue-600 focus:ring-blue-500 checked:border-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-600 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="hs-at-with-checkboxes-main">
-                                            <span class="sr-only">Checkbox</span>
-                                        </label>
-                                    </th>
-
                                     <th scope="col" class="px-6 py-3 text-start">
                                         <div class="flex items-center gap-x-2">
-                                            <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
-                                                Name
+                                            <span
+                                                class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                                                Nama
                                             </span>
                                         </div>
                                     </th>
 
                                     <th scope="col" class="px-6 py-3 text-start">
                                         <div class="flex items-center gap-x-2">
-                                            <span class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
-                                                Access Type
+                                            <span
+                                                class="text-xs font-semibold uppercase text-gray-800 dark:text-neutral-200">
+                                                Hak Akses
                                             </span>
                                         </div>
                                     </th>
@@ -59,96 +101,137 @@
                             </thead>
 
                             <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
-                                @forelse($users as $user)
-                                <tr>
-                                    <td class="size-px whitespace-nowrap">
-                                        <div class="ps-6 py-3">
-                                            <label for="hs-at-with-checkboxes-{{ $user->id }}" class="flex">
-                                                <input type="checkbox" class="shrink-0 border-gray-300 rounded-sm text-blue-600 focus:ring-blue-500 checked:border-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-600 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800" id="hs-at-with-checkboxes-{{ $user->id }}">
-                                                <span class="sr-only">Checkbox</span>
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td class="size-px whitespace-nowrap">
-                                        <div class="px-6 py-3">
-                                            <div class="flex items-center gap-x-3">
-                                                <span class="inline-flex items-center justify-center size-9.5 rounded-full bg-white border border-gray-300 dark:bg-neutral-800 dark:border-neutral-700">
-                                                    <span class="font-medium text-sm text-gray-800 dark:text-neutral-200">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
-                                                </span>
-                                                <div class="grow">
-                                                    <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-200">{{ $user->name }}</span>
-                                                    <span class="block text-sm text-gray-500 dark:text-neutral-500">{{ $user->email }}</span>
+                                @forelse($data as $d)
+                                    <tr class="hover:bg-gray-100 dark:hover:bg-neutral-700">
+                                        <td class="size-px whitespace-nowrap">
+                                            <div class="px-6 py-3">
+                                                <div class="flex items-center gap-x-3">
+                                                    <span
+                                                        class="inline-flex items-center justify-center size-9.5 rounded-full bg-white border border-gray-300 dark:bg-neutral-800 dark:border-neutral-700">
+                                                        <span
+                                                            class="font-medium text-sm text-gray-800 dark:text-neutral-200">
+                                                            {{ strtoupper(substr($d->name, 0, 1)) }}
+                                                        </span>
+                                                    </span>
+                                                    <div class="grow">
+                                                        <span
+                                                            class="block text-sm font-semibold text-gray-800 dark:text-neutral-200">{{ $d->name }}</span>
+                                                        <span
+                                                            class="block text-sm text-gray-500 dark:text-neutral-500">{{ $d->email }}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td class="h-px w-72 whitespace-nowrap">
-                                        <div class="px-6 py-3">
-                                            <span class="block text-sm font-semibold text-gray-800 dark:text-neutral-200">{{ ucfirst($user->access_type ?? '-') }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="size-px whitespace-nowrap">
-                                        <div class="px-6 py-1.5 flex items-center gap-x-2">
-                                            <a class="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline focus:outline-hidden focus:underline font-medium dark:text-blue-500" href="{{ route('admin.users.update', $user->id) }}">
-                                                Edit
-                                            </a>
-                                            <form action="{{ route('admin.users.delete', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete {{ $user->name }}? This action cannot be undone.')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center gap-x-1 text-sm text-red-600 decoration-2 hover:underline focus:outline-hidden focus:underline font-medium dark:text-red-500">
-                                                    Delete
+                                        </td>
+                                        <td class="h-px w-72 whitespace-nowrap">
+                                            <div class="px-6 py-3">
+                                                <span
+                                                    class="block text-sm font-semibold text-gray-800 dark:text-neutral-200">
+                                                    {{ UserConst::getAccessTypes()[$d->access_type] ?? '-' }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="size-px whitespace-nowrap">
+                                            <div class="px-6 py-1.5 flex items-center gap-x-1">
+                                                <a navigate
+                                                    class="inline-flex items-center justify-center size-8 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
+                                                    href="{{ route('admin.users.detail', $d->id) }}" title="View">
+                                                    @include('_admin._layout.icons.view_detail')
+                                                </a>
+                                                <a navigate
+                                                    class="inline-flex items-center justify-center size-8 text-sm font-semibold rounded-lg border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:border-blue-300 focus:outline-none focus:bg-blue-100 disabled:opacity-50 disabled:pointer-events-none dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-500 dark:hover:bg-blue-800/30 dark:hover:border-blue-700"
+                                                    href="{{ route('admin.users.update', $d->id) }}" title="Edit">
+                                                    @include('_admin._layout.icons.pencil')
+                                                </a>
+                                                <button type="button"
+                                                    class="inline-flex items-center justify-center size-8 text-sm font-semibold rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 focus:outline-none focus:bg-red-100 disabled:opacity-50 disabled:pointer-events-none dark:border-red-800 dark:bg-red-900/20 dark:text-red-500 dark:hover:bg-red-800/30 dark:hover:border-red-700 cursor-pointer"
+                                                    title="Delete" data-hs-overlay="#delete-modal"
+                                                    onclick="setDeleteData('{{ $d->id }}', '{{ $d->name }}')">
+                                                    @include('_admin._layout.icons.trash')
                                                 </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @empty
-                                <tr>
-                                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-neutral-500">
-                                        No users found.
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="6"
+                                            class="px-6 py-4 text-center text-sm text-gray-500 dark:text-neutral-500">
+                                            <x-admin.empty-state />
+                                        </td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    <div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200 dark:border-neutral-700">
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-neutral-400">
-                                <span class="font-semibold text-gray-800 dark:text-neutral-200">{{ $users->total() }}</span> results
-                            </p>
-                        </div>
 
-                        <div>
-                            <div class="inline-flex gap-x-2">
-                                @if($users->onFirstPage())
-                                <button type="button" disabled class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800">
-                                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                                    Prev
-                                </button>
-                                @else
-                                <a href="{{ $users->previousPageUrl() }}" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800">
-                                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                                    Prev
-                                </a>
-                                @endif
-
-                                @if($users->hasMorePages())
-                                <a href="{{ $users->nextPageUrl() }}" class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800">
-                                    Next
-                                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                                </a>
-                                @else
-                                <button type="button" disabled class="py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-hidden focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800">
-                                    Next
-                                    <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                                </button>
-                                @endif
+                    @if (count($data) > 0 && $data->hasPages())
+                        <div class="px-6 py-4 border-t border-gray-200 dark:border-neutral-700">
+                            <div class="flex justify-end">
+                                {{ $data->links() }}
                             </div>
                         </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="hs-overlay hidden size-full fixed top-0 start-0 z-80 overflow-x-hidden overflow-y-auto"
+        role="dialog" tabindex="-1" aria-labelledby="delete-modal-label">
+        <div
+            class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
+            <div
+                class="relative flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
+                <div class="absolute top-2 end-2">
+                    <button type="button"
+                        class="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400 dark:focus:bg-neutral-600"
+                        aria-label="Close" data-hs-overlay="#delete-modal">
+                        <span class="sr-only">Close</span>
+                        @include('_admin._layout.icons.close_modal')
+                    </button>
+                </div>
+
+                <div class="p-4 sm:p-10 text-center overflow-y-auto">
+                    <!-- Icon -->
+                    <span
+                        class="mb-4 inline-flex justify-center items-center size-14 rounded-full border-4 border-red-50 bg-red-100 text-red-500 dark:bg-red-700 dark:border-red-600 dark:text-red-100">
+                        @include('_admin._layout.icons.warning_modal')
+                    </span>
+                    <!-- End Icon -->
+
+                    <h3 id="delete-modal-label" class="mb-2 text-xl font-bold text-gray-800 dark:text-neutral-200">
+                        Hapus Pengguna
+                    </h3>
+                    <p class="text-gray-500 dark:text-neutral-500">
+                        Apakah Anda yakin ingin menghapus <span id="delete-user-name"
+                            class="font-semibold text-gray-800 dark:text-neutral-200"></span>?
+                        <br>Tindakan ini tidak dapat dibatalkan.
+                    </p>
+
+                    <div class="mt-6 flex justify-center gap-x-4">
+                        <button type="button"
+                            class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+                            data-hs-overlay="#delete-modal">
+                            Batal
+                        </button>
+                        <form id="delete-form" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:bg-red-700 disabled:opacity-50 disabled:pointer-events-none">
+                                Ya, Hapus
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function setDeleteData(id, name) {
+            document.getElementById('delete-user-name').textContent = name;
+            document.getElementById('delete-form').action = '{{ url('admin/users/delete') }}/' + id;
+        }
+    </script>
 @endsection
