@@ -88,9 +88,12 @@ $(document).ready(function () {
 
             loadScriptsSequentially(externalScripts.slice(), function () {
                 // Execute inline scripts after external ones have loaded
+                // Execute inline scripts after external ones have loaded
                 inlineScripts.forEach(function (code) {
                     try {
-                        eval(code);
+                        var script = document.createElement('script');
+                        script.textContent = code;
+                        document.body.appendChild(script);
                     } catch (e) {
                         console.error('Error executing inline script:', e);
                     }
@@ -251,7 +254,9 @@ $(document).ready(function () {
                     })(externalScripts.slice(), function () {
                         inlineScripts.forEach(function (code) {
                             try {
-                                eval(code);
+                                var script = document.createElement('script');
+                                script.textContent = code;
+                                document.body.appendChild(script);
                             } catch (e) { }
                         });
                         window.dispatchEvent(new Event('load'));
