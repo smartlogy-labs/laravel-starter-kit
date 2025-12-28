@@ -22,7 +22,7 @@ RUN install-php-extensions \
     redis
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-COPY --from=oven/bun:canary-debian /usr/local/bin/bun /usr/local/bin/bun
+COPY --from=oven/bun:latest /usr/local/bin/bun /usr/local/bin/bun
 
 WORKDIR /var/www/html
 
