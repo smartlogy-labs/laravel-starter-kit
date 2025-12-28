@@ -39,6 +39,10 @@ COPY ./deploy/php.ini /usr/local/etc/php/
 # Install Laravel dependencies using Composer.
 RUN composer install --optimize-autoloader --no-dev
 
+COPY package.json ./
+COPY bun.lock ./
+COPY src ./
+
 # Build frontend assets
 RUN bun install
 RUN bun run build
