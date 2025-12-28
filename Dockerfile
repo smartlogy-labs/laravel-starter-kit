@@ -44,7 +44,7 @@ RUN bun install
 RUN bun run build
 
 # Laravel artisan commands
-RUN php artisan storage:link && php artisan telescope:install && php artisan optimize
+RUN php artisan storage:link && php artisan optimize
 
 # Enable PHP extensions
 # RUN docker-php-ext-enable xdebug
