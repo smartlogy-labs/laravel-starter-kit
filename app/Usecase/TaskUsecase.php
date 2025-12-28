@@ -17,12 +17,12 @@ class TaskUsecase extends Usecase
     public function getAll(array $filterData = []): array
     {
         try {
-            $query = DB::table(DatabaseConst::TASK.' as t')
-                ->leftJoin(DatabaseConst::TASK_CATEGORY.' as tc', 't.task_category_id', '=', 'tc.id')
+            $query = DB::table(DatabaseConst::TASK . ' as t')
+                ->leftJoin(DatabaseConst::TASK_CATEGORY . ' as tc', 't.task_category_id', '=', 'tc.id')
                 ->select('t.*', 'tc.name as category_name')
                 ->whereNull('t.deleted_at')
                 ->when($filterData['keywords'] ?? false, function ($query, $keywords) {
-                    return $query->where('t.title', 'like', '%'.$keywords.'%');
+                    return $query->where('t.title', 'like', '%' . $keywords . '%');
                 })
                 ->when($filterData['status'] ?? false, function ($query, $status) {
                     return $query->where('t.status', $status);
@@ -70,9 +70,11 @@ class TaskUsecase extends Usecase
     public function getByID(int $id): array
     {
         try {
-            $data = DB::table(DatabaseConst::TASK)
-                ->where('id', $id)
-                ->whereNull('deleted_at')
+            $data = DB::table(DatabaseConst::TASK . ' as t')
+                ->leftJoin(DatabaseConst::TASK_CATEGORY . ' as tc', 't.task_category_id', '=', 'tc.id')
+                ->select('t.*', 'tc.name as task_category_name')
+                ->where('t.id', $id)
+                ->whereNull('t.deleted_at')
                 ->first();
 
             if (! $data) {

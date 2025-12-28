@@ -1,6 +1,6 @@
 # Laravel Starter Kit
 
-A modern Laravel starter kit with admin panel, built with Laravel 12, Tailwind CSS 4, and Preline UI components.
+A modern Laravel starter kit with admin panel, built with Laravel 12, Bun for build tool, Tailwind CSS 4, and Preline UI components.
 
 ## Features
 
@@ -51,7 +51,7 @@ This will start:
 - Laravel development server
 - Queue listener
 - Laravel Pail (log viewer)
-- Vite dev server
+- Bun dev server
 
 ## Project Structure
 
@@ -79,7 +79,7 @@ resources/
 | `composer setup` | Initial project setup |
 | `composer dev` | Start development servers |
 | `composer test` | Run tests |
-| `bun run dev` | Start Vite dev server |
+| `bun run dev` | Start Bun dev server |
 | `bun run build` | Build for production |
 
 ## Admin Panel
@@ -97,7 +97,7 @@ The admin panel is available at `/admin` route and includes:
 |----------|------------|
 | Backend | Laravel 12, PHP 8.2+ |
 | Frontend | Tailwind CSS 4, Preline UI |
-| Build Tool | Vite 7 |
+| Build Tool | Bun |
 | Testing | Pest |
 | Database | SQLite (default), MySQL, PostgreSQL |
 

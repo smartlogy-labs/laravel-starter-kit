@@ -159,6 +159,11 @@
                                         <td class="size-px whitespace-nowrap">
                                             <div class="px-6 py-1.5 flex items-center gap-x-2 justify-end">
                                                 <a navigate
+                                                    class="py-2 px-3 inline-flex justify-center items-center gap-x-2 text-xs font-medium rounded-lg border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 disabled:opacity-50 disabled:pointer-events-none dark:text-gray-400 dark:bg-gray-800/30 dark:hover:bg-gray-800/20 dark:focus:bg-gray-800/20"
+                                                    href="{{ route('admin.tasks.detail', $d->id) }}">
+                                                    @include('_admin._layout.icons.view_detail')
+                                                </a>
+                                                <a navigate
                                                     class="py-2 px-3 inline-flex justify-center items-center gap-x-2 text-xs font-medium rounded-lg border border-transparent bg-blue-100 text-blue-800 hover:bg-blue-200 focus:outline-none focus:bg-blue-200 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-400 dark:bg-blue-800/30 dark:hover:bg-blue-800/20 dark:focus:bg-blue-800/20"
                                                     href="{{ route('admin.tasks.update', $d->id) }}">
                                                     @include('_admin._layout.icons.pencil')

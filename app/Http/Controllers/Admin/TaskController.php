@@ -25,7 +25,7 @@ class TaskController extends Controller
         protected TaskUsecase $usecase,
         protected TaskCategoryUsecase $categoryUsecase
     ) {
-        $this->baseRedirect = 'admin/'.$this->page['route'];
+        $this->baseRedirect = 'admin/' . $this->page['route'];
     }
 
     public function index(Request $request): View|Response
@@ -79,6 +79,24 @@ class TaskController extends Controller
                 ->withInput()
                 ->with('error', $process['message'] ?? ResponseConst::DEFAULT_ERROR_MESSAGE);
         }
+    }
+
+    public function detail(int $id): View|RedirectResponse|Response
+    {
+        $data = $this->usecase->getByID($id);
+
+        if (empty($data['data'])) {
+            return redirect()
+                ->intended($this->baseRedirect)
+                ->with('error', ResponseConst::DEFAULT_ERROR_MESSAGE);
+        }
+        $data = $data['data'] ?? [];
+
+        return view('_admin.tasks.detail', [
+            'data' => (object) $data,
+            'id' => $id,
+            'page' => $this->page,
+        ]);
     }
 
     public function update(int $id): View|RedirectResponse|Response

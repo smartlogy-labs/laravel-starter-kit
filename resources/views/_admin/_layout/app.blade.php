@@ -7,6 +7,9 @@
 
     <title>{{ env('APP_ENV') == 'local' ? '[LOCAL] ' : '' }}Laravel Starter Kit - @yield('title')</title>
 
+    {{-- Favicon --}}
+    @include('_admin._layout.favicon')
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

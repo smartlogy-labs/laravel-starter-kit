@@ -45,6 +45,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [TaskController::class, 'index'])->name('index');
         Route::get('/add', [TaskController::class, 'add'])->name('add');
         Route::post('/create', [TaskController::class, 'doCreate'])->name('do_create');
+        Route::get('/detail/{id}', [TaskController::class, 'detail'])->name('detail');
         Route::get('/update/{id}', [TaskController::class, 'update'])->name('update');
         Route::post('/update/{id}', [TaskController::class, 'doUpdate'])->name('do_update');
         Route::delete('/delete/{id}', [TaskController::class, 'delete'])->name('delete');
