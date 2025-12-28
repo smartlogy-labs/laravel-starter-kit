@@ -41,7 +41,6 @@ RUN composer install --optimize-autoloader --no-dev
 
 COPY package.json ./
 COPY bun.lock ./
-COPY src ./
 
 # Build frontend assets
 RUN bun install
