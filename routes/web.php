@@ -5,10 +5,20 @@ use App\Http\Controllers\Admin\TaskController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\AuthController;
+use Illuminate\Support\Benchmark;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
+});
+
+Route::get('test', function () {
+    Benchmark::dd(function (){
+        (string) view('welcome');
+
+    });
+
+
 });
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
